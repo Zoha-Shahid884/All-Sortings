@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Entry</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+    }
+    .left-section {
+      flex: 1;
+      background: url('https://images.unsplash.com/photo-1517430816045-df4b7de11d1d') no-repeat center center/cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    .right-section {
+      flex: 1;
+      background-color: #1f1f1f;
+      color: white;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .form-container {
+      max-width: 400px;
+      margin: auto;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin-top: 5px;
+    }
+    .btn {
+      background-color: #ffc107;
+      color: #000;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 25px;
+      margin: 5px 3px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background-color: #ffca2c;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    li {
+      background-color: #2c2c2c;
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+    }
+    .sort-options {
+      margin: 10px 0;
+    }
+    label {
+      margin-right: 10px;
+    }
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .left-section, .right-section {
+        flex: 1;
+        width: 100%;
+        height: 50vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="left-section">
+  <div>
+    <h1>Earn Money Online<br><span style="color: #ffc107;">Add & Sort Products</span></h1>
+    <p>Use any algorithm to sort prices Low to High or High to Low</p>
+  </div>
+</div>
+
+<div class="right-section">
+  <div class="form-container">
+    <h2>Enter Product Info</h2>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="name">
+    </div>
+    <div class="form-group">
+      <label>Address</label>
+      <input type="text" id="address">
+    </div>
+    <div class="form-group">
+      <label>Product Name</label>
+      <input type="text" id="product">
+    </div>
+    <div class="form-group">
+      <label>Price</label>
+      <input type="number" id="price">
+    </div>
+
+    <div class="sort-options">
+      <label><input type="radio" name="sortOrder" value="asc" checked> Low to High</label>
+      <label><input type="radio" name="sortOrder" value="desc"> High to Low</label>
+    </div>
+
+    <button class="btn" onclick="addItem()">Add</button>
+    <button class="btn" onclick="bubbleSort()">Bubble Sort</button>
+    <button class="btn" onclick="quickSortCall()">Quick Sort</button>
+    <button class="btn" onclick="selectionSort()">Selection Sort</button>
+    <button class="btn" onclick="mergeSortCall()">Merge Sort</button>
+    <button class="btn" onclick="insertionSort()">Insertion Sort</button>
+
+    <ul id="productList"></ul>
+  </div>
+</div>
+
+<script>
+  let products = [];
+
+  function addItem() {
+    let name = document.getElementById("name").value;
+    let address = document.getElementById("address").value;
+    let productName = document.getElementById("product").value;
+    let price = parseFloat(document.getElementById("price").value);
+
+    if (name && address && productName && !isNaN(price)) {
+      let product = { name, address, product: productName, price };
+      products.push(product);
+      showProducts();
+      clearInput();
+    } else {
+      alert("Please fill all fields correctly.");
+    }
+  }
+
+  function getSortOrder() {
+    let selected = document.querySelector('input[name="sortOrder"]:checked').value;
+    return selected === 'asc';
+  }
+
+  function showProducts() {
+    let list = document.getElementById("productList");
+    list.innerHTML = "";
+    products.forEach(item => {
+      let li = document.createElement("li");
+      li.innerHTML = `<strong>${item.product}</strong> - Rs. ${item.price}`;
+      list.appendChild(li);
+    });
+  }
+
+  function clearInput() {
+    document.getElementById("name").value = "";
+    document.getElementById("address").value = "";
+    document.getElementById("product").value = "";
+    document.getElementById("price").value = "";
+  }
+
+  function bubbleSort() {
+    let asc = getSortOrder();
+    for (let i = 0; i < products.length - 1; i++) {
+      for (let j = 0; j < products.length - i - 1; j++) {
+        if ((asc && products[j].price > products[j + 1].price) ||
+            (!asc && products[j].price < products[j + 1].price)) {
+          [products[j], products[j + 1]] = [products[j + 1], products[j]];
+        }
+      }
+    }
+    showProducts();
+  }
+
+  function insertionSort() {
+    let asc = getSortOrder();
+    for (let i = 1; i < products.length; i++) {
+      let key = products[i];
+      let j = i - 1;
+      while (j >= 0 && ((asc && products[j].price > key.price) ||
+                        (!asc && products[j].price < key.price))) {
+        products[j + 1] = products[j];
+        j--;
+      }
+      products[j + 1] = key;
+    }
+    showProducts();
+  }
+
+  function selectionSort() {
+    let asc = getSortOrder();
+    for (let i = 0; i < products.length; i++) {
+      let selectedIndex = i;
+      for (let j = i + 1; j < products.length; j++) {
+        if ((asc && products[j].price < products[selectedIndex].price) ||
+            (!asc && products[j].price > products[selectedIndex].price)) {
+          selectedIndex = j;
+        }
+      }
+      [products[i], products[selectedIndex]] = [products[selectedIndex], products[i]];
+    }
+    showProducts();
+  }
+
+  function quickSort(arr, asc) {
+    if (arr.length <= 1) return arr;
+    let pivot = arr[0];
+    let left = [], right = [];
+    for (let i = 1; i < arr.length; i++) {
+      if ((asc && arr[i].price < pivot.price) || (!asc && arr[i].price > pivot.price)) {
+        left.push(arr[i]);
+      } else {
+        right.push(arr[i]);
+      }
+    }
+    return quickSort(left, asc).concat(pivot, quickSort(right, asc));
+  }
+
+  function quickSortCall() {
+    let asc = getSortOrder();
+    products = quickSort(products, asc);
+    showProducts();
+  }
+
+  function mergeSort(arr, asc) {
+    if (arr.length <= 1) return arr;
+    let mid = Math.floor(arr.length / 2);
+    let left = mergeSort(arr.slice(0, mid), asc);
+    let right = mergeSort(arr.slice(mid), asc);
+    return merge(left, right, asc);
+  }
+
+  function merge(left, right, asc) {
+    let result = [], i = 0, j = 0;
+    while (i < left.length && j < right.length) {
+      if ((asc && left[i].price < right[j].price) ||
+          (!asc && left[i].price > right[j].price)) {
+        result.push(left[i++]);
+      } else {
+        result.push(right[j++]);
+      }
+    }
+    return result.concat(left.slice(i), right.slice(j));
+  }
+
+  function mergeSortCall() {
+    let asc = getSortOrder();
+    products = mergeSort(products, asc);
+    showProducts();
+  }
+</script>
+
+</body>
+</html>
